@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+    stackoverflowdb:
+        image: postgres
+        environment:
+            - POSTGRES_USER=stackoverflow
+            - POSTGRES_PASSWORD=stackoverflow
+            - POSTGRES_DB=stackoverflow
+        ports:
+            - "15432:5432"
+    pg_admin:
+        image: dpage/pgadmin4
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=user@domain.com
+            - PGADMIN_DEFAULT_PASSWORD=SuperSecret
+        ports:
+            - "16543:80"
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+    scheduler:
+        image: apache/airflow
+        command: scheduler
+        deploy:
+          restart_policy:
+              condition: on-failure
+        depends_on:
+            - postgres
+        env_file:
+            - .env
+        volumes:
+            - ./dags:/opt/airflow/dags
+            - ./logs:/opt/airflow/logs
+    webserver:
+        image: apache/airflow
+        entrypoint: ./scripts/entrypoint.sh
+        deploy:
+          restart_policy:
+              condition: on-failure
+        depends_on:
+            - postgres
+            - scheduler
+        env_file:
+            - .env
+        volumes:
+            - ./dags:/opt/airflow/dags
+            - ./logs:/opt/airflow/logs
+            - ./scripts:/opt/airflow/scripts
+        ports:
+            - "8080:8080"
+        
