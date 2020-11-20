@@ -10,7 +10,7 @@ from utils import insert_question_to_db, write_questions_to_s3, render_template
 default_args = {
     "owner": "me",
     "depends_on_past": False,
-    "start_date": datetime(2020, 11, 15),
+    "start_date": datetime(2020, 11, 18),
     "email": ["my_email@mail.com"],
     "email_on_failure": False,
     "email_on_retry": False,
@@ -56,7 +56,7 @@ with DAG("stack_overflow_questions", default_args=default_args) as dag:
 
     Task_V = EmailOperator(
         task_id="send_email",
-        to="email@domain.com",
+        to="my_email@mail.com",
         subject="Top questions with tag 'pandas' on {{ ds }}",
         html_content="{{ task_instance.xcom_pull(task_ids='render_template', key='html_content') }}",
     )

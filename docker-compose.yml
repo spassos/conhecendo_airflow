@@ -28,6 +28,8 @@ services:
           restart_policy:
               condition: on-failure
         depends_on:
+            - stackoverflowdb
+            - pg_admin
             - postgres
         env_file:
             - .env
@@ -41,6 +43,8 @@ services:
           restart_policy:
               condition: on-failure
         depends_on:
+            - stackoverflowdb
+            - pg_admin
             - postgres
             - scheduler
         env_file:
